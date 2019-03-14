@@ -1,38 +1,19 @@
-class Sensor
-  attr_accessor :random_override
-  OFFSET = 16
-
-  def pop_next_pressure_psi_value
-    OFFSET + sample_pressure
-  end
-
-  def sample_pressure
-    # placeholder implementation that simulate a real sensor in a real tire
-    6 * rand * rand
-  end
-
-  def rand
-    return super if random_override.nil?
-    random_override
-  end
-
-end
-
 class Alarm
-
   attr_reader :is_alarm_on
-  attr_accessor :sensor
 
-  def initialize
+  def initialize(sensor:)
     @low_pressure_threshold = 17
     @high_pressure_threshold = 21
-    @sensor = Sensor.new()
+    @sensor = sensor
     @is_alarm_on = false
   end
 
   def check
-    psi_pressure_value = @sensor.pop_next_pressure_psi_value()
-    if psi_pressure_value < @low_pressure_threshold or @high_pressure_threshold < psi_pressure_value
+    psi_pressure_value = @sensor.pressure_value
+    pressure_too_low = psi_pressure_value < @low_pressure_threshold
+    pressure_too_high = @high_pressure_threshold < psi_pressure_value
+
+    if pressure_too_low or pressure_too_high
       @is_alarm_on = true
     end
   end
